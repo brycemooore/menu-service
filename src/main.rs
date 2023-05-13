@@ -15,6 +15,7 @@ mod database;
 mod actors;
 mod models;
 mod schema;
+mod vm;
 
 pub struct AppState {
     pub db: Addr<DbActor>
