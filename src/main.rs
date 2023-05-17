@@ -1,24 +1,25 @@
-use actix::{Addr, SyncArbiter};
+
 use actix_web::{middleware::Logger, App,  HttpServer, web};
-use actors::DbActor;
+use database::Database;
 use dotenv::dotenv;
 use humantime;
-use log::info;
+use log::{info, warn};
+use sqlx::postgres::PgPoolOptions;
+use sqlx::{Pool, Postgres};
 use std::env;
 use std::time::SystemTime;
-use crate::database::PostgresPool;
 
-#[macro_use]
-extern crate diesel_migrations;
 
 mod database;
-mod actors;
 mod models;
-mod schema;
 mod vm;
+mod api;
+mod service;
+mod dto;
+mod error;
 
 pub struct AppState {
-    pub db: Addr<DbActor>
+    pub db: Database,
 }
 
 #[actix_web::main]
@@ -32,19 +33,22 @@ async fn main() -> std::io::Result<()> {
         _ => (),
     };
 
-    let url = env::var("DATABASE_URL").expect("no DB URL");
+    //db setup
+    let url = env::var("DATABASE_URL").expect("DATABASE_URL must be specified as an environment variable");
+    let pool = get_database_connecntion(&url).await;
+    run_database_migrations(&pool).await;
+
     let host = env::var("HOST").expect("Host not set");
     let port = env::var("PORT").expect("Port not set");
-
-    database::run_migrations(&url);
-    let pool: PostgresPool = database::get_pool(&url);
-    let db_addr = SyncArbiter::start(5, move || DbActor(pool.clone()));
 
     info!("Server starting at {}:{}", host, port);
 
     HttpServer::new(move || {
         App::new()
-        .app_data(web::Data::new(AppState{db: db_addr.clone()}))
+        .app_data(web::Data::new(AppState {db: Database::new(pool.clone())}))
+        .service(api::get_menu_by_id)
+        .service(api::post_menu)
+        .service(api::post_item)
             .wrap(Logger::default())
     })
     .bind(format!("{}:{}", host, port))?
@@ -67,4 +71,32 @@ fn setup_logger() -> Result<(), fern::InitError> {
         .chain(std::io::stdout())
         .apply()?;
     Ok(())
+}
+
+async fn get_database_connecntion(url: &str) -> Pool<Postgres> {
+    match PgPoolOptions::new()
+    .max_connections(10)
+    .connect(&url)
+    .await
+    {
+        Ok(pool) => {
+            info!("✅Connection to the database is successful!");
+            pool
+        }
+        Err(err) => {
+            warn!("🔥 Failed to connect to the database: {:?}", err);
+            std::process::exit(1);
+        }
+    }
+}
+
+async fn run_database_migrations(pool: &Pool<Postgres>) {
+        // run migrations
+        match sqlx::migrate!("./migrations").run(pool).await {
+            Ok(_) => info!("✅ Database migration successful!"),
+            Err(err) => {
+                warn!("🔥 Database migration failed: {:?}", err);
+                std::process::exit(1);
+            }
+        };
 }
