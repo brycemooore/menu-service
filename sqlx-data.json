@@ -1,0 +1,426 @@
+{
+  "db": "PostgreSQL",
+  "21b6a98f8979d1d04e34783bf9d27bbd7360303ae59a7f78c66f79ef1cfee23d": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "description",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "available",
+          "ordinal": 3,
+          "type_info": "Bool"
+        },
+        {
+          "name": "menu_category_id",
+          "ordinal": 4,
+          "type_info": "Int4"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 5,
+          "type_info": "Timestamp"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 6,
+          "type_info": "Timestamp"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4Array"
+        ]
+      }
+    },
+    "query": "SELECT i.id, i.name, i.description, i.available, mci.menu_category_id, i.created_at, i.updated_at \n            FROM item AS i \n            JOIN menu_category_item AS mci \n            ON mci.item_id = i.id \n            WHERE mci.menu_category_id = ANY($1)"
+  },
+  "27d8acbac9b0509b21a6b57d5cde8afaea30ce0aaad010d6311a83fde4aa49de": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "item_id",
+          "ordinal": 2,
+          "type_info": "Int4"
+        },
+        {
+          "name": "available",
+          "ordinal": 3,
+          "type_info": "Bool"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 4,
+          "type_info": "Timestamp"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 5,
+          "type_info": "Timestamp"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4Array"
+        ]
+      }
+    },
+    "query": "SELECT * FROM item_ingredient WHERE item_id = ANY($1)"
+  },
+  "3ca43eccc0b7a905aa0bcbe8f5aec26f4a23eae0fde0f4217e2a2dd291253131": {
+    "describe": {
+      "columns": [
+        {
+          "name": "item_id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "menu_category_id",
+          "ordinal": 1,
+          "type_info": "Int4"
+        }
+      ],
+      "nullable": [
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Int4"
+        ]
+      }
+    },
+    "query": "INSERT INTO menu_category_item (menu_category_id, item_id) VALUES ($1, $2) RETURNING *"
+  },
+  "6d0df60f4372d59867abf37cbdc822a60d5851193b0507a551a5fb83d3cf3d9c": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "menu_id",
+          "ordinal": 2,
+          "type_info": "Int4"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 3,
+          "type_info": "Timestamp"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 4,
+          "type_info": "Timestamp"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "SELECT * FROM menu_category WHERE menu_id = $1"
+  },
+  "93598607b2811dd62952c0bf547c6a81d9663fea92a4b82bed794f69f65ad802": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "is_active",
+          "ordinal": 2,
+          "type_info": "Bool"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 3,
+          "type_info": "Timestamp"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 4,
+          "type_info": "Timestamp"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "SELECT * FROM menu WHERE id = $1"
+  },
+  "c1723ac3f7d6b58bac386f0cdafff7514a337a5eb4af0d7002bf446958480a70": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "is_active",
+          "ordinal": 2,
+          "type_info": "Bool"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 3,
+          "type_info": "Timestamp"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 4,
+          "type_info": "Timestamp"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Bool",
+          "Timestamp",
+          "Timestamp"
+        ]
+      }
+    },
+    "query": "INSERT INTO menu (name, is_active, created_at, updated_at) VALUES ($1, $2, $3, $4) RETURNING *"
+  },
+  "c248c8c81f1ad7ac27406848aa7591c1a1bd6bbe1a9af2454bc8662c6aeb0952": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "menu_id",
+          "ordinal": 2,
+          "type_info": "Int4"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 3,
+          "type_info": "Timestamp"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 4,
+          "type_info": "Timestamp"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Int4",
+          "Timestamp",
+          "Timestamp"
+        ]
+      }
+    },
+    "query": "INSERT INTO menu_category (name, menu_id, created_at, updated_at) VALUES ($1, $2, $3, $4) RETURNING *"
+  },
+  "d0c9b2adfd328989f288e9de371caf35c43bf63841ab0372e9e082bba65963a3": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "item_id",
+          "ordinal": 2,
+          "type_info": "Int4"
+        },
+        {
+          "name": "available",
+          "ordinal": 3,
+          "type_info": "Bool"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 4,
+          "type_info": "Timestamp"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 5,
+          "type_info": "Timestamp"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Bool",
+          "Int4",
+          "Timestamp",
+          "Timestamp"
+        ]
+      }
+    },
+    "query": "INSERT INTO item_ingredient (name, available, item_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING *"
+  },
+  "f4ffbaf7b321f19415282acb2861dada2587adfa6684d59ead9488b1a7d2f2e2": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "description",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "available",
+          "ordinal": 3,
+          "type_info": "Bool"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 4,
+          "type_info": "Timestamp"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 5,
+          "type_info": "Timestamp"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Text",
+          "Bool",
+          "Timestamp",
+          "Timestamp"
+        ]
+      }
+    },
+    "query": "INSERT INTO item (name, description, available, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING *"
+  }
+}

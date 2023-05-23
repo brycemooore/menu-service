@@ -38,8 +38,8 @@ async fn main() -> std::io::Result<()> {
     let pool = get_database_connecntion(&url).await;
     run_database_migrations(&pool).await;
 
-    let host = env::var("HOST").expect("Host not set");
-    let port = env::var("PORT").expect("Port not set");
+    let host = env::var("HOST").expect("HOST must be specified as an environment variable");
+    let port = env::var("PORT").expect("PORT must be specified as an environment variable");
 
     info!("Server starting at {}:{}", host, port);
 
