@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use log::warn;
+
 use crate::{database::{Database, InsertMenuResponse}, vm::{menu::MenuVM, menu_category::MenuCategoryVM, item::ItemVM}, dto::{item::ItemDTO, item_ingredient::ItemIngredientDTO}, error::DatabaseError, models::{menu::Menu, menu_category::MenuCategory,  item::Item, item_ingredient::ItemIngredient}};
 
  pub async fn get_menu_by_id(id: i32, db: Database) -> Result<MenuVM, DatabaseError> {
@@ -7,22 +9,34 @@ use crate::{database::{Database, InsertMenuResponse}, vm::{menu::MenuVM, menu_ca
     let menu: Menu = match db.get_menu_by_id(id).await {
         Ok(Some(menu)) => menu, 
         Ok(None) => return Err(DatabaseError::NotFound(id.to_string())),
-        Err(_) => return Err(DatabaseError::InternalError),
+        Err(e) => {
+            warn!("Error getting menu by id {:?}: {}", id, e);
+            return Err(DatabaseError::InternalError);
+        }
     };
 
     let categories = match db.get_categories_by_menu_id(id).await {
         Ok(categories) => categories,
-        Err(_) => return Err(DatabaseError::InternalError),
+        Err(e) => {
+            warn!("Error getting categories by menu id {:?}: {}", id, e);
+            return Err(DatabaseError::InternalError);
+        }
     };
 
     let items = match db.get_items_by_category_ids(categories.iter().map(|c| c.id).collect()).await {
         Ok(items) => items,
-        Err(_) => return Err(DatabaseError::InternalError),
+        Err(e) => {
+            warn!("Error getting items by category ids {}", e);
+            return Err(DatabaseError::InternalError);
+        }
     };
 
     let ingredients = match db.get_ingredients_by_item_ids(items.iter().map(|i| i.id).collect()).await {
         Ok(ingredients) => ingredients,
-        Err(_) => return Err(DatabaseError::InternalError),
+        Err(e) => {
+            warn!("Error getting ingredients by item ids {}", e);
+            return Err(DatabaseError::InternalError);
+        }
     };
 
     Ok(build_menu_vm(menu, categories, items, ingredients))
@@ -31,17 +45,26 @@ use crate::{database::{Database, InsertMenuResponse}, vm::{menu::MenuVM, menu_ca
 pub async fn create_menu(menu_vm: MenuVM, db: Database) -> Result<MenuVM, DatabaseError> {
     let insert_menu_response: InsertMenuResponse = match db.insert_menu(menu_vm).await {
         Ok(insert_menu_response) => insert_menu_response,
-        Err(_) => return Err(DatabaseError::InternalError),
+        Err(e) => {
+            warn!("Error inserting menu {}", e);
+            return Err(DatabaseError::InternalError);
+        }
     };
 
     let items = match db.get_items_by_category_ids(insert_menu_response.categories.iter().map(|c| c.id).collect()).await {
         Ok(items) => items,
-        Err(_) => return Err(DatabaseError::InternalError),
+        Err(e) => {
+            warn!("Error getting items by category ids {}", e);
+            return Err(DatabaseError::InternalError);
+        }
     };
 
     let ingredients = match db.get_ingredients_by_item_ids(items.iter().map(|i| i.id).collect()).await {
         Ok(ingredients) => ingredients,
-        Err(_) => return Err(DatabaseError::InternalError),
+        Err(e) => {
+            warn!("Error getting ingredients by item ids {}", e);
+            return Err(DatabaseError::InternalError);
+        }
     };
 
     Ok(build_menu_vm(insert_menu_response.menu, insert_menu_response.categories, items, ingredients))
