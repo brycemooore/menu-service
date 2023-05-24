@@ -1,9 +1,9 @@
 FROM rust:1.67 AS builder
+WORKDIR /usr/src/menu-service
 COPY . .
 ARG SQLX_OFFLINE=true
-RUN cargo build --release
+RUN cargo install --path .
 
-FROM debian:bullseye-slim
-COPY --from=builder ./target/release/menu-service ./target/release/menu-service
-RUN apt-get update && apt install -y openssl
-CMD ["/target/release/menu-service"]
+FROM gcr.io/distroless/cc-debian10
+COPY --from=builder /usr/local/cargo/bin/menu-service /usr/local/bin/menu-service
+CMD ["menu-service"]

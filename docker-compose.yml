@@ -5,21 +5,30 @@ services:
     environment:
       - POSTGRES_DB=menu
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=password
     ports:
       - "5432:5432"
     volumes:
       - dbdata:/var/lib/postgresql/data
+    networks:
+      - menu-service-network
 
   app:
-    build: .
+    image: menu-service-app:latest
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/menu
+      - DATABASE_URL=postgres://postgres:password@db:5432/menu
+      - HOST=0.0.0.0
+      - PORT=8080
     depends_on:
       - db
     ports:
       - "8080:8080"
+    networks:
+      - menu-service-network
 
 volumes:
   dbdata:
     driver: local
+
+networks:
+  menu-service-network:
