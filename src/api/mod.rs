@@ -9,6 +9,7 @@ use crate::vm::menu::MenuVM;
 #[get("/menu/{id}")]
 async fn get_menu_by_id(path: web::Path<i32>, state: web::Data<AppState>) -> Result<HttpResponse, Error> {
     let id = path.into_inner();
+    info!("Recieved request to get menu by id: {:?}", id);
     let db = state.as_ref().db.clone();
     let menu = service::menu::get_menu_by_id(id, db).await?;
     Ok(HttpResponse::Ok().json(menu))
@@ -18,6 +19,7 @@ async fn get_menu_by_id(path: web::Path<i32>, state: web::Data<AppState>) -> Res
 async fn post_menu(menu: web::Json<MenuVM>, state: web::Data<AppState>) -> Result<HttpResponse, Error> {
     let db = state.as_ref().db.clone();
     let menu_vm = menu.into_inner();
+    info!("Recieved request to create menu: {:?}", menu_vm);
     let menu = service::menu::create_menu(menu_vm, db).await?;
     Ok(HttpResponse::Ok().json(menu))
 }
