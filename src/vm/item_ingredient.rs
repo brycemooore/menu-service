@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::{dto::item_ingredient::ItemIngredientDTO, models::item_ingredient::ItemIngredient};
 
 #[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ItemIngredientVM {
     pub id: Option<i32>, 
     pub name: String, 
